@@ -21,7 +21,7 @@ const UsuarioSchema = new mongoose.Schema({
   endereco: { type: String },
   numero: { type: Number },
   cep: { type: String, required: true },
-  nascimento: { type: Date, required: true },
+  nascimento: { type: Date, required: true }
 });
 
 const Usuario = mongoose.model("Usuario", UsuarioSchema);
@@ -42,13 +42,18 @@ app.post("/cadastrousuario", async (req, res) => {
     endereco: endereco,
     numero: numero,
     cep: cep,
-    nascimento: nascimento,
+    nascimento: nascimento
   });
 
   try {
     const newUsuario = await usuario.save();
     res.json({ error: null, msg: "Cadastro ok", UsuarioId: newUsuario._id });
   } catch (error) {}
+});
+
+//rota de get de formulario
+app.get("/cadastrousuario", async(req, res)=>{
+  res.sendFile(__dirname + "/cadastrousuario.html")
 });
 
 app.get("/", async(req, res)=>{
