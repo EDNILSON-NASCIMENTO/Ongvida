@@ -5,7 +5,9 @@ const bodyParser = require("body-parser");
 
 //configurando o express para o postman e para usar a pagina
 const app = express();
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
 const port = 3000;
 
 //configurando o banco de dados
@@ -21,7 +23,7 @@ const UsuarioSchema = new mongoose.Schema({
   endereco: { type: String },
   numero: { type: Number },
   cep: { type: String, required: true },
-  nascimento: { type: Date, required: true }
+  nascimento: { type: Date, required: true },
 });
 
 const Usuario = mongoose.model("Usuario", UsuarioSchema);
@@ -36,6 +38,20 @@ app.post("/cadastrousuario", async (req, res) => {
   const cep = req.body.cep;
   const nascimento = req.body.nascimento;
 
+
+  //validação de campos
+  if(nome == null || email == null || endereco == null || numero == null || cep == null || nascimento == null){
+    return res.status(400).json({error : "Preenchar todos os campos!!!"});
+  }
+
+  //teste de duplicidade
+  const emailExiste = await Usuario.findOne({email : email});
+
+  if(emailExiste){
+    return res.status(400).json({error : "O email informado já existe"});
+  }
+
+  
   const usuario = new Usuario({
     nome: nome,
     email: email,
@@ -52,14 +68,14 @@ app.post("/cadastrousuario", async (req, res) => {
 });
 
 //rota de get de formulario
-app.get("/cadastrousuario", async(req, res)=>{
-  res.sendFile(__dirname + "/cadastrousuario.html")
+app.get("/cadastrousuario", async (req, res) => {
+  res.sendFile(__dirname + "/cadastrousuario.html");
 });
 
-app.get("/", async(req, res)=>{
-    res.sendFile(__dirname + "/index.html")
+app.get("/", async (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
-app.listen(port, ()=>{
-    console.log(`Servidor rodando na porta ${port}`)
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
 });
